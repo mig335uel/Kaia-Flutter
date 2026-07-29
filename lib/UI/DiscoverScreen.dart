@@ -1,0 +1,20 @@
+import 'package:flutter/material.dart';
+
+class DiscoverScreen extends StatefulWidget {
+  const DiscoverScreen({super.key});
+
+  @override
+  State<DiscoverScreen> createState() => _DiscoverScreenState();
+}
+
+class _DiscoverScreenState extends State<DiscoverScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        "Descubrir",
+        style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
+      ),
+    );
+  }
+}

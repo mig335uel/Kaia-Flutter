@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "56790361943",
+    "project_id": "kaia-d1d19",
+    "storage_bucket": "kaia-d1d19.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:56790361943:android:d7dbe810d7687e823d4012",
+        "android_client_info": {
+          "package_name": "com.agoras.kaia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "56790361943-gsfcreh7p76sghv30nj6ga8h1e5n0c62.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.agoras.kaia",
+            "certificate_hash": "3bc46a13955290ce4282620f8f55dc885eb9bc6f"
+          }
+        },
+        {
+          "client_id": "56790361943-uk0u6aurhiondde3qvpt74t4pv79f9b6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.agoras.kaia",
+            "certificate_hash": "99db086d457c573ac19494a638ab3a8e825ead42"
+          }
+        },
+        {
+          "client_id": "56790361943-87olac8bu9i6ca617c9mms3irt19eqke.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkDSt7CTMZEyqnUULXuJToXPVpX7bomYM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "56790361943-2q47crgaqdinjn29a3qiirha5sohcbic.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "56790361943-dc15tjvqjhe8kl79hcs47bef8729a43r.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.agoras.kaia"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
