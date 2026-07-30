@@ -33,7 +33,7 @@ class _GameCardsState extends State<GameCards> {
           Expanded(
             child: _buildGameCard(
               title: 'voiceGame'.tr(),
-              icon: Icons.voice_chat_outlined,
+              icon: Icons.call,
               gradientColors: [
                 const Color(0xFF3FCECC).withOpacity(0.85),
                 const Color(0xFF7575FF).withOpacity(0.85),
