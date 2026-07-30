@@ -33,7 +33,7 @@ class _HomeState extends State<Home> {
     }
   }
 
-  List<Widget> get _screens =>  [
+  List<Widget> get _screens => [
     HomeScreen(),
     DiscoverScreen(),
     Accountscreen(),
@@ -61,7 +61,9 @@ class _HomeState extends State<Home> {
         child: _screens[_selectedIndex], // Shows the active screen
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Theme.of(context).colorScheme.onSecondary,
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? Color.fromARGB(255, 20, 20, 20)
+            : Colors.white,
         showSelectedLabels: false,
         showUnselectedLabels: false,
         currentIndex: _selectedIndex,
@@ -72,7 +74,7 @@ class _HomeState extends State<Home> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.search),
+            icon: Icon(CupertinoIcons.globe),
             label: 'Discover',
           ),
           BottomNavigationBarItem(
@@ -80,7 +82,7 @@ class _HomeState extends State<Home> {
             label: 'Profile',
           ),
         ],
-      )
+      ),
     );
   }
 
@@ -106,9 +108,9 @@ class _HomeState extends State<Home> {
               color: isSelected ? const Color(0xFF4A00E0) : Colors.white70,
               size: 26,
             ),
+
             // We use AnimatedSize or just an AnimatedOpacity/Padding if we want the text to appear smoothly.
             // Using a simple conditional here for simplicity, AnimatedContainer handles the bounding box well.
-            
           ],
         ),
       ),

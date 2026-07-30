@@ -4,7 +4,7 @@ import 'package:kaia/Data/Users.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class FeedService {
-  static Future<List<Users>> getFeedUsers(String id) async {
+  Future<List<Users>> getFeedUsers(String id) async {
     // 1. Obtenemos lo que el usuario está buscando (ej: edad 18 a 25, género 'female')
     final response = await Supabase.instance.client
         .from('user_preferences')
@@ -67,6 +67,7 @@ class FeedService {
               'birth_date',
               maxBirthDate.toIso8601String().split('T')[0],
             ); // Nació antes del límite joven
+            break;
       case 'Female':
         feedData = await Supabase.instance.client
             .from('users')
@@ -81,8 +82,10 @@ class FeedService {
               'birth_date',
               maxBirthDate.toIso8601String().split('T')[0],
             ); // Nació antes del límite joven
+            break;
       default:
         feedData = [];
+        break;
     }
     // 4. Filtrar por género si ha elegido algo concreto
 

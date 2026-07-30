@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kaia/Components/GameCards.dart';
+import 'package:kaia/Components/ProfileCard.dart';
 import 'package:kaia/Service/AuthService.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -163,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   color: isDark ? Colors.white : Colors.black,
                                 ),
                               ),
-                              const SizedBox(height: 24),
+                              const SizedBox(height: 11),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 children: [
@@ -340,6 +341,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
           GameCards(),
+          Profilecard(),
           ElevatedButton(
             onPressed: () {
               AuthService.signOut();

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -52,8 +54,8 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.light,
         ),
         scaffoldBackgroundColor: Colors.white,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.transparent,
+        appBarTheme: AppBarTheme(
+          backgroundColor: Platform.isIOS ? Colors.transparent : Colors.white,
           elevation: 0,
           // AQUÍ CONFIGURAS LA STATUS BAR: Íconos oscuros para el modo claro
           systemOverlayStyle: SystemUiOverlayStyle.dark, 
