@@ -341,13 +341,14 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
           GameCards(),
-          Profilecard(),
           ElevatedButton(
             onPressed: () {
               AuthService.signOut();
             },
             child: Text("Cerrar Sesión"),
           ),
+          Profilecard(),
+          
         ],
       ),
     );

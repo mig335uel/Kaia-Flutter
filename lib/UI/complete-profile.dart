@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -77,10 +80,24 @@ class _CompleteProfileState extends State<CompleteProfile>
     });
 
     try {
+      final http = HttpClient();
       final user = Supabase.instance.client.auth.currentUser;
       if (user == null) throw Exception('No user found');
 
       final profileImageUrl = user.userMetadata?['avatar_url'];
+
+      final responseIp = await http.getUrl(Uri.parse("https://ifconfig.me/all.json"));
+      final response = await responseIp.close();
+      final responseBody = await response.transform(utf8.decoder).join();
+      
+      final data = json.decode(responseBody);
+      final IP = data['ip_addr'];
+
+      final responseCountry = await http.getUrl(Uri.parse("http://ip-api.com/json/$IP"));
+      final responseCoutry = await responseCountry.close();
+      final responseBodyCountry = await responseCoutry.transform(utf8.decoder).join();
+      final dataCountry = json.decode(responseBodyCountry);
+      final country = dataCountry['country'];
 
       await Supabase.instance.client.from('users').insert({
         'id': user.id,
@@ -89,6 +106,8 @@ class _CompleteProfileState extends State<CompleteProfile>
         'username': _usernameController.text,
         'birth_date': "${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}",
         'profile_image': profileImageUrl,
+        'gender': _genderController.text,
+        'country': country,
       });
 
       final ageInYears = DateTime.now().difference(_selectedDate!).inDays / 365.25;
