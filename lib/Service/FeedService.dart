@@ -4,12 +4,12 @@ import 'package:kaia/Data/Users.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class FeedService {
-  Future<List<Users>> getFeedUsers(Users me) async {
+  static Future<List<Users>> getFeedUsers(String id) async {
     // 1. Obtenemos lo que el usuario está buscando (ej: edad 18 a 25, género 'female')
     final response = await Supabase.instance.client
         .from('user_preferences')
         .select()
-        .eq('user_id', me.id)
+        .eq('user_id', id)
         .single();
     final prefs = Userpreferences.fromJson(response);
 
@@ -36,28 +36,57 @@ class FeedService {
     );
 
     // 3. Consulta a Supabase
-    var query = Supabase.instance.client
-        .from('users')
-        .select()
-        .neq('id', me.id) // No me incluyas a mí en mi propio feed
-        .gte(
-          'birth_date',
-          minBirthDate.toIso8601String().split('T')[0],
-        ) // Nació después del límite viejo
-        .lte(
-          'birth_date',
-          maxBirthDate.toIso8601String().split('T')[0],
-        ); // Nació antes del límite joven
+    List<Map<String, dynamic>> feedData = [];
+    switch (prefs.genderFeed) {
+      case 'All':
+        feedData = await Supabase.instance.client
+            .from('users')
+            .select('*')
+            .neq('id', id) // No me incluyas a mí en mi propio feed
+            .gte(
+              'birth_date',
+              minBirthDate.toIso8601String().split('T')[0],
+            ) // Nació después del límite viejo
+            .lte(
+              'birth_date',
+              maxBirthDate.toIso8601String().split('T')[0],
+            ); // Nació antes del límite joven
 
-    // 4. Filtrar por género si ha elegido algo concreto
-    if (prefs.genderFeed.isNotEmpty &&
-        prefs.genderFeed.toLowerCase() != 'all') {
-      query = query.eq('gender', prefs.genderFeed);
+        break;
+      case 'Male':
+        feedData = await Supabase.instance.client
+            .from('users')
+            .select('*')
+            .eq('gender', 'Male')
+            .neq('id', id) // No me incluyas a mí en mi propio feed
+            .gte(
+              'birth_date',
+              minBirthDate.toIso8601String().split('T')[0],
+            ) // Nació después del límite viejo
+            .lte(
+              'birth_date',
+              maxBirthDate.toIso8601String().split('T')[0],
+            ); // Nació antes del límite joven
+      case 'Female':
+        feedData = await Supabase.instance.client
+            .from('users')
+            .select('*')
+            .eq('gender', 'Female')
+            .neq('id',id) // No me incluyas a mí en mi propio feed
+            .gte(
+              'birth_date',
+              minBirthDate.toIso8601String().split('T')[0],
+            ) // Nació después del límite viejo
+            .lte(
+              'birth_date',
+              maxBirthDate.toIso8601String().split('T')[0],
+            ); // Nació antes del límite joven
+      default:
+        feedData = [];
     }
+    // 4. Filtrar por género si ha elegido algo concreto
 
     // Ejecutamos la consulta limitando a 30 perfiles por ahora
-    final feedData = await query.limit(200);
-
     // Convertimos la respuesta de base de datos a lista de Objetos Users
     List<Users> users = feedData.map((json) => Users.fromJson(json)).toList();
     return users;

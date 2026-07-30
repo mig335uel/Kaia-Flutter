@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Users {
   final String id;
@@ -35,8 +36,12 @@ class Users {
       username: json['username'],
       name: json['name'],
       last_name: json['last_name'],
-      birth_date: json['birth_date'] != null ? DateTime.parse(json['birth_date']) : null,
-      created_at: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
+      birth_date: json['birth_date'] != null
+          ? DateTime.parse(json['birth_date'])
+          : null,
+      created_at: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
+          : null,
       profile_image: json['profile_image'],
       country: json['country'],
       gender: json['gender'],
@@ -63,7 +68,9 @@ class Users {
   static Future<String> getDeviceCountry() async {
     try {
       // Usamos una API gratuita sobre HTTPS para obtener el código de país real (ej: 'ES', 'GB')
-      final request = await HttpClient().getUrl(Uri.parse('https://api.country.is/'));
+      final request = await HttpClient().getUrl(
+        Uri.parse('https://api.country.is/'),
+      );
       final response = await request.close();
       if (response.statusCode == 200) {
         final stringData = await response.transform(utf8.decoder).join();
@@ -87,6 +94,33 @@ class Users {
       return 'Unknown';
     }
   }
+
+  static Users empty() => Users(
+    id: '',
+    name: '',
+    last_name: '',
+    username: '',
+    birth_date: DateTime.now(),
+    created_at: DateTime.now(),
+    profile_image: '',
+    country: '',
+    gender: '',
+    city: '',
+    description: '',
+  );
+
+  static Future<Users> useAuth() async {
+    final user = await Supabase.instance.client.auth.currentUser;
+    if (user != null) {
+      final data = await Supabase.instance.client
+          .from('users')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+      return Users.fromJson(data);
+    }
+    return Users.empty();
+  }
 }
 
 class RegisterForm {
@@ -98,16 +132,15 @@ class RegisterForm {
   final DateTime birth_date;
   final String gender;
 
-
   // Constructor con nombre para crear un formulario vacío
   RegisterForm.empty()
-      : email = '',
-        password = '',
-        name = '',
-        last_name = '',
-        username = '',
-        birth_date = DateTime(2000, 1, 1),
-        gender = '';
+    : email = '',
+      password = '',
+      name = '',
+      last_name = '',
+      username = '',
+      birth_date = DateTime(2000, 1, 1),
+      gender = '';
 
   // Constructor principal
   RegisterForm({
@@ -141,7 +174,9 @@ class CompleteRegisterUseroAuth {
       name: json['name'],
       last_name: json['last_name'],
       username: json['username'],
-      birth_date: json['birth_date'] != null ? DateTime.parse(json['birth_date']) : DateTime.now(),
+      birth_date: json['birth_date'] != null
+          ? DateTime.parse(json['birth_date'])
+          : DateTime.now(),
       gender: json['gender'],
     );
   }
