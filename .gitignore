@@ -32,8 +32,8 @@ build/
 .pub/
 /build/
 /coverage/
-AgoraASMShield.m
-AgoraASMShield.h
+*AgoraASMShield.m
+*AgoraASMShield.h
 # Symbolication related
 app.*.symbols
 
