@@ -7,7 +7,6 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:kaia/Service/NotificationService.dart';
 import 'package:crypto/crypto.dart';
 
-
 class AuthService {
   static Future<void> signInWithGoogle() async {
     try {
@@ -55,7 +54,10 @@ class AuthService {
       );
 
       final idToken = credential.identityToken;
-      final appleName = firebase_auth.AppleFullPersonName(givenName: credential.givenName, familyName: credential.familyName);
+      final appleName = firebase_auth.AppleFullPersonName(
+        givenName: credential.givenName,
+        familyName: credential.familyName,
+      );
       if (idToken == null) {
         throw const AuthException(
           'No se ha podido obtener el ID Token de Apple.',
@@ -70,27 +72,28 @@ class AuthService {
       );
 
       // 4. Autenticamos en Firebase
-      final credential_apple = firebase_auth.AppleAuthProvider.credentialWithIDToken(
-        idToken,
-        rawNonce,
-        appleName
-      );
+      final credential_apple =
+          firebase_auth.AppleAuthProvider.credentialWithIDToken(
+            idToken,
+            rawNonce,
+            appleName,
+          );
 
-      await firebase_auth.FirebaseAuth.instance.signInWithCredential(credential_apple);
+      await firebase_auth.FirebaseAuth.instance.signInWithCredential(
+        credential_apple,
+      );
 
       print("Native Apple Auth Success: ${response.user?.id}");
     } catch (e) {
       print("Error in Native Apple Auth: $e");
     }
-
-
-
   }
-      static Future<void> signOut() async {
+
+  static Future<void> signOut() async {
     try {
       // 1. Comprobamos el proveedor a través de Supabase
       final user = Supabase.instance.client.auth.currentUser;
-      
+
       // 'providers' es una lista. Ej: ['google'] o ['apple']
       final providers = user?.appMetadata?['providers'] as List<dynamic>? ?? [];
 
@@ -113,11 +116,8 @@ class AuthService {
 
       // 4. Cerramos la sesión en Supabase
       await Supabase.instance.client.auth.signOut();
-      
     } catch (e) {
       print("Error al cerrar sesión: $e");
     }
   }
-
-
 }
