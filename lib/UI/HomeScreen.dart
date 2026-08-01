@@ -347,7 +347,7 @@ class _HomeScreenState extends State<HomeScreen> {
             },
             child: Text("Cerrar Sesión"),
           ),
-          Profilecard(),
+          Expanded(child: Profilecard()),
           
         ],
       ),

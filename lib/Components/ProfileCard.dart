@@ -1,8 +1,6 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
+import 'package:kaia/Controllers/HomeFeedController.dart';
 import 'package:kaia/Data/Users.dart';
-import 'package:kaia/Service/FeedService.dart';
 
 class Profilecard extends StatefulWidget {
   Profilecard({super.key});
@@ -12,12 +10,13 @@ class Profilecard extends StatefulWidget {
 }
 
 class _ProfilecardState extends State<Profilecard> {
-  late Future<List<Users>> _feedUsersFuture;
+  final HomeFeedController _controller = HomeFeedController();
+  final ScrollController _scrollController = ScrollController();
+
   int calculateAge(DateTime birthDate) {
     final now = DateTime.now();
     int age = now.year - birthDate.year;
 
-    // Verificar si el cumpleaños ya pasó este año
     if (now.month < birthDate.month ||
         (now.month == birthDate.month && now.day < birthDate.day)) {
       age--;
@@ -29,142 +28,171 @@ class _ProfilecardState extends State<Profilecard> {
   @override
   void initState() {
     super.initState();
-    _feedUsersFuture = _fetchFeedUsers();
+    _loadFeed();
+    _scrollController.addListener(_onScroll);
   }
 
-  Future<List<Users>> _fetchFeedUsers() async {
+  Future<void> _loadFeed() async {
     final me = await Users.useAuth();
-    return await FeedService().getFeedUsers(me.id);
+    await _controller.loadInitial(me.id);
+    setState(() {});
+  }
+
+  void _onScroll() async {
+    if (_scrollController.position.extentAfter < 300) {
+      final me = await Users.useAuth();
+      await _controller.loadMore(me.id);
+      setState(() {});
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _refreshFeed() async {
-    setState(() {
-      _feedUsersFuture = _fetchFeedUsers();
-    });
-    // Esperar a que termine para que el RefreshIndicator sepa cuándo ocultarse
-    await _feedUsersFuture;
+    final me = await Users.useAuth();
+    await _controller.loadInitial(me.id);
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Users>>(
-      future: _feedUsersFuture,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return Expanded(
-            child: RefreshIndicator(
-              onRefresh: _refreshFeed,
-              child: ListView.builder(
-                itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {},
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        top: BorderSide(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white.withOpacity(0.2)
-                              : Colors.black.withOpacity(0.1),
-                        ),
-                        bottom: BorderSide(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white.withOpacity(0.2)
-                              : Colors.black.withOpacity(0.1),
-                        ),
-                      ),
+    // Mostrar loading si está cargando y no hay perfiles aún
+    if (_controller.isLoading && _controller.profiles.isEmpty) {
+      return Center(child: CircularProgressIndicator());
+    }
+
+    // Si no hay perfiles
+    if (_controller.profiles.isEmpty) {
+      return Center(child: Text('No hay usuarios disponibles'));
+    }
+
+    return RefreshIndicator(
+      onRefresh: _refreshFeed,
+      child: ListView.builder(
+        controller: _scrollController,
+        itemCount: _controller.profiles.length,
+        itemBuilder: (context, index) {
+          final user = _controller.profiles[index];
+
+          return GestureDetector(
+            onTap: () {},
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white.withOpacity(0.2)
+                        : Colors.black.withOpacity(0.1),
+                  ),
+                  bottom: BorderSide(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white.withOpacity(0.2)
+                        : Colors.black.withOpacity(0.1),
+                  ),
+                ),
+              ),
+              margin: EdgeInsets.only(left: 10, bottom: 10),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundImage: NetworkImage(
+                      user.profile_image ??
+                          'https://cdn-icons-png.flaticon.com/512/149/149071.png',
                     ),
-                    margin: EdgeInsets.only(left: 10, bottom: 10),
-                    child: Row(
+                  ),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Image(
-                          image: NetworkImage(
-                            snapshot.data![index].profile_image ??
-                                'https://cdn-icons-png.flaticon.com/512/149/149071.png',
-                          ),
-                          width: 60,
-                          height: 60,
-                        ),
-                        SizedBox(width: 10),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        Row(
                           children: [
-                            Row(
-                              children: [
-                                Text(
-                                  snapshot.data![index].username.toString(),
-                                  textAlign: TextAlign.justify,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 17,
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  Text(
+                                    user.username.toString(),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 17,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(width: 5),
-                                Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 5),
-                                  decoration: BoxDecoration(
-                                    color:
-                                        snapshot.data![index].gender == "Male"
-                                        ? const Color.fromARGB(
-                                            255,
-                                            14,
-                                            146,
-                                            255,
-                                          )
-                                        : Color.fromARGB(255, 255, 86, 142),
-                                    borderRadius: BorderRadius.circular(9999),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        snapshot.data![index].gender == "Male"
-                                            ? Icons.male
-                                            : Icons.female,
-                                        size: 15,
-                                        color: Colors.white,
-                                      ),
-                                      Text(
-                                        calculateAge(
-                                          DateTime.parse(
-                                            snapshot.data![index].birth_date
-                                                .toString(),
+                                  SizedBox(width: 8),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 3,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: user.gender == "Male"
+                                          ? const Color.fromARGB(
+                                              255,
+                                              14,
+                                              146,
+                                              255,
+                                            )
+                                          : Color.fromARGB(255, 255, 86, 142),
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          user.gender == "Male"
+                                              ? Icons.male
+                                              : Icons.female_outlined,
+                                          size: 14,
+                                          color: Colors.white,
+                                        ),
+                                        
+                                        Text(
+                                          calculateAge(
+                                            DateTime.parse(
+                                              user.birth_date.toString(),
+                                            ),
+                                          ).toString(),
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w500,
                                           ),
-                                        ).toString(),
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            Text(
-                              snapshot.data![index].description ??
-                                  'Este usuario es nuevo',
-                              textAlign: TextAlign.justify,
+                                ],
+                              ),
                             ),
                           ],
+                        ),
+
+                        SizedBox(height: 6),
+                        Text(
+                          user.description ?? 'Este usuario es nuevo',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey[600],
+                          ),
                         ),
                       ],
                     ),
                   ),
-                );
-              },
-            ),
-            ),
-          );
-        }
-        if (snapshot.hasError) {
-          return Expanded(
-            child: Center(
-              child: Text('Ha ocurrido un error: ${snapshot.error}'),
+                ],
+              ),
             ),
           );
-        }
-        return const Expanded(
-          child: Center(child: CircularProgressIndicator()),
-        );
-      },
+        },
+      ),
     );
   }
 }

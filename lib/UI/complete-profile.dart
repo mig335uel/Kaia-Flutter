@@ -304,9 +304,8 @@ class _CompleteProfileState extends State<CompleteProfile>
                                         itemExtent: 40,
                                         onSelectedItemChanged: (int index) {
                                           final options = [
-                                            'male'.tr(),
-                                            'female'.tr(),
-                                            'other'.tr(),
+                                            'Male',
+                                            'Female'
                                           ];
                                           setState(() {
                                             _genderController.text =
@@ -332,15 +331,7 @@ class _CompleteProfileState extends State<CompleteProfile>
                                               ),
                                             ),
                                           ),
-                                          Center(
-                                            child: Text(
-                                              'other'.tr(),
-                                              style: TextStyle(
-                                                fontSize: 20,
-                                                color: isDark ? Colors.white : Colors.black,
-                                              ),
-                                            ),
-                                          ),
+
                                         ],
                                       ),
                                     ),
