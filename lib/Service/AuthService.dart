@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -89,21 +90,61 @@ class AuthService {
     }
   }
 
-
-  static Future<void> signInWithAgoras() async {
-    try{
+    static Future<void> signInWithAgoras() async {
+    try {
       final rawNonce = Supabase.instance.client.auth.generateRawNonce();
-      final hashedNonce = sha256.convert(utf8.encode(rawNonce)).toString();
-
       
+      // Generate PKCE code challenge
+      final codeVerifier = rawNonce;
+      final digest = sha256.convert(utf8.encode(codeVerifier));
+      final codeChallenge = base64UrlEncode(digest.bytes).replaceAll('=', '');
 
-      final response = await Supabase.instance.client.auth.signInWithOAuth(
-        const OAuthProvider('custom:agoras'),
+      final url = Uri.https(
+        'zqcgontfrcuofeqrtvvq.supabase.co',
+        '/auth/v1/oauth/authorize',
+        {
+          'client_id': '07d2d1a6-b408-40fc-ae2e-03207e614176',
+          'response_type': 'code',
+          'scope': 'openid profile email',
+          'redirect_uri': 'https://api.agoras.es/oauth/callback',
+          'code_challenge': codeChallenge,
+          'code_challenge_method': 'S256',
+          'state': codeVerifier,
+        },
+      ).toString();
+
+      final response = await FlutterWebAuth2.authenticate(
+        url: url,
+        callbackUrlScheme: 'kaia',
       );
-    }catch(e){
+
+      final idToken = Uri.parse(response).queryParameters['id_token'];
+
+      if (idToken != null) {
+        // 1. Autenticamos en Supabase (Agregado await)
+        final supabaseResponse = await Supabase.instance.client.auth.signInWithIdToken(
+          provider: OAuthProvider('custom:agoras'), 
+          idToken: idToken,
+        );
+        print("Supabase Agoras Auth Success: ${supabaseResponse.user?.id}");
+
+        // 2. Autenticamos en Firebase
+        final provider = firebase_auth.OAuthProvider('oidc.agoras');
+        final credential = provider.credential(
+          idToken: idToken,
+          rawNonce: rawNonce, // Pasamos el nonce original para validar la sesión
+        );
+
+        final firebaseUser = await firebase_auth.FirebaseAuth.instance.signInWithCredential(
+          credential,
+        );
+        print("Firebase Agoras Auth Success: ${firebaseUser.user?.uid}");
+      }
+    } catch (e) {
       print("Error in Agoras Auth: $e");
     }
   }
+
 
   static Future<void> signOut() async {
     try {
@@ -123,6 +164,21 @@ class AuthService {
         // Apple no requiere un "signOut" nativo como Google
         print("El usuario había iniciado sesión con Apple");
       }
+
+      // Si el proveedor fue Agoras, cerramos la sesión en el navegador web
+      if (providers.contains('custom:agoras') || providers.contains('agoras')) {
+        try {
+          // Ajusta el dominio (ej: auth.agoras.es) a donde esté hosteado agorasoauth
+          await FlutterWebAuth2.authenticate(
+            url: 'https://auth.agoras.es/auth/signout?redirect_uri=kaia://logout',
+            callbackUrlScheme: 'kaia',
+          );
+          print("El usuario cerró sesión en Agoras correctamente");
+        } catch (e) {
+          print("Error al cerrar sesión de Agoras en la web: $e");
+        }
+      }
+
 
       // Borramos el token del dispositivo para notificaciones
       await NotificationService.removeDeviceToken();
