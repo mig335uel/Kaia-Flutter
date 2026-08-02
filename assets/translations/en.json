@@ -2,6 +2,7 @@
   "login": "Login",
   "loginWithGoogle": "Login with Google",
   "loginWithApple": "Login with Apple",
+  "loginWithAgoras": "Login with Agoras",
   "loginManual": "Manual Login",
   "completeProfile": "Complete Profile",
   "name": "Name",

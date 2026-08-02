@@ -165,6 +165,48 @@ class OAuthButtom extends StatelessWidget {
     );
   }
 
+
+  Widget _buildAgorasButton(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return CupertinoButton(
+      padding: const EdgeInsets.all(0),
+      child: Container(
+        padding: const EdgeInsets.all(12.5),
+        margin: const EdgeInsets.only(bottom: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: isDark ? Colors.transparent : const Color(0xFFC5C5C5),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/AgorasLogo.png',
+              height: 24,
+              width: 24,
+            ),
+            const SizedBox(width: 5),
+            Text(
+              'loginWithAgoras'.tr(),
+              style: TextStyle(
+                color: isDark ? Colors.black : Colors.white,
+                fontSize: 20,
+              ),
+              textAlign: TextAlign.center,
+              
+            ),
+          ],
+        ),
+      ),
+      onPressed: () {
+        AuthService.signInWithAgoras();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (Platform.isIOS || Platform.isMacOS) {
@@ -174,6 +216,6 @@ class OAuthButtom extends StatelessWidget {
     }
 
     // For Android and other platforms, just show Google
-    return _buildGoogleButton(context);
+    return Column(children: [_buildGoogleButton(context), _buildAgorasButton(context)]);
   }
 }

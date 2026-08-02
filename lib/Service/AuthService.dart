@@ -89,6 +89,22 @@ class AuthService {
     }
   }
 
+
+  static Future<void> signInWithAgoras() async {
+    try{
+      final rawNonce = Supabase.instance.client.auth.generateRawNonce();
+      final hashedNonce = sha256.convert(utf8.encode(rawNonce)).toString();
+
+      
+
+      final response = await Supabase.instance.client.auth.signInWithOAuth(
+        const OAuthProvider('custom:agoras'),
+      );
+    }catch(e){
+      print("Error in Agoras Auth: $e");
+    }
+  }
+
   static Future<void> signOut() async {
     try {
       // 1. Comprobamos el proveedor a través de Supabase
