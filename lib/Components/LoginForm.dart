@@ -37,7 +37,9 @@ class _LoginFormState extends State<LoginForm> {
         // ),
         child: AnimatedCrossFade(
           duration: const Duration(milliseconds: 300),
-          crossFadeState: showEmailForm ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+          crossFadeState: showEmailForm
+              ? CrossFadeState.showSecond
+              : CrossFadeState.showFirst,
           firstChild: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -47,7 +49,11 @@ class _LoginFormState extends State<LoginForm> {
                 width: double.infinity,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFF6A5BFC), Color(0xFF7575FF), Color(0xFF3FCECC)],
+                    colors: [
+                      Color(0xFF6A5BFC),
+                      Color(0xFF7575FF),
+                      Color(0xFF3FCECC),
+                    ],
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
                   ),
@@ -110,7 +116,6 @@ class OAuthButtom extends StatelessWidget {
                 fontSize: 20,
               ),
               textAlign: TextAlign.center,
-              
             ),
           ],
         ),
@@ -154,7 +159,6 @@ class OAuthButtom extends StatelessWidget {
                 fontSize: 20,
               ),
               textAlign: TextAlign.center,
-              
             ),
           ],
         ),
@@ -164,7 +168,6 @@ class OAuthButtom extends StatelessWidget {
       },
     );
   }
-
 
   Widget _buildAgorasButton(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -183,11 +186,7 @@ class OAuthButtom extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(
-              'assets/AgorasLogo.png',
-              height: 24,
-              width: 24,
-            ),
+            Image.asset('assets/AgorasLogo.png', height: 24, width: 24),
             const SizedBox(width: 5),
             Text(
               'loginWithAgoras'.tr(),
@@ -196,7 +195,6 @@ class OAuthButtom extends StatelessWidget {
                 fontSize: 20,
               ),
               textAlign: TextAlign.center,
-              
             ),
           ],
         ),
@@ -211,11 +209,20 @@ class OAuthButtom extends StatelessWidget {
   Widget build(BuildContext context) {
     if (Platform.isIOS || Platform.isMacOS) {
       return Column(
-        children: [_buildAppleButton(context), _buildGoogleButton(context)],
+        children: [
+          _buildAppleButton(context),
+          _buildGoogleButton(context),
+          _buildAgorasButton(context),
+        ],
       );
     }
 
     // For Android and other platforms, just show Google
-    return Column(children: [_buildGoogleButton(context), _buildAgorasButton(context)]);
+    return Column(
+      children: [
+        _buildGoogleButton(context),
+        _buildAgorasButton(context),
+      ],
+    );
   }
 }
