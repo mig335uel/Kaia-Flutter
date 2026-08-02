@@ -170,7 +170,7 @@ class AuthService {
         try {
           // Ajusta el dominio (ej: auth.agoras.es) a donde esté hosteado agorasoauth
           await FlutterWebAuth2.authenticate(
-            url: 'https://auth.agoras.es/auth/signout?redirect_uri=kaia://logout',
+            url: 'https://accounts.agoras.es/auth/signout?redirect_uri=kaia://logout',
             callbackUrlScheme: 'kaia',
           );
           print("El usuario cerró sesión en Agoras correctamente");
