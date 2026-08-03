@@ -48,6 +48,7 @@ dependencies:
   cloud_firestore: ^6.7.1
   flutter_secure_storage: ^10.3.1
   flutter_web_auth_2: ^5.0.3
+  flutter_webrtc: ^1.6.0
 
 dev_dependencies:
   flutter_test:
