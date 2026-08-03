@@ -1,9 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:kaia/UI/AccountScreen.dart';
-import 'package:kaia/UI/DiscoverScreen.dart';
-import 'package:kaia/UI/HomeScreen.dart';
+import 'package:kaia/UI/SocialMode/AccountScreen.dart';
+import 'package:kaia/UI/SocialMode/DiscoverScreen.dart';
+import 'package:kaia/UI/SocialMode/HomeScreen.dart';
 import 'package:kaia/Service/NotificationService.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 

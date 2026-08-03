@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:kaia/UI/Home.dart';
+import 'package:kaia/UI/SocialMode/Home.dart';
 import 'package:kaia/Service/NotificationService.dart';
 
 class CompleteProfile extends StatefulWidget {
