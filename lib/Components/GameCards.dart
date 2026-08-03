@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:kaia/UI/SocialMode/TextMatchMaking.dart';
 
 class GameCards extends StatefulWidget {
   const GameCards({super.key});
@@ -26,7 +27,12 @@ class _GameCardsState extends State<GameCards> {
                 const Color(0xFF7575FF).withOpacity(0.85),
                 const Color(0xFF3FCECC).withOpacity(0.85),
               ],
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Textmatchmaking()),
+                );
+              },
             ),
           ),
           const SizedBox(width: 16),
