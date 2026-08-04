@@ -15,14 +15,19 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
-  await MobileAds.instance.initialize();
+
+  if(Platform.isAndroid || Platform.isIOS) {
+    await MobileAds.instance.initialize();
+  }
   await Supabase.initialize(url: 'https://database.kaia.agoras.es', publishableKey: 'sb_publishable_vDmIFdPscUqwdgiK6Ilch2_G26bzkpT', authOptions: FlutterAuthClientOptions());
   // await Supabase.initialize(url: 'https://wpugrcftbewydtquhjvb.supabase.co', publishableKey: 'sb_publishable_w_buzUN9t9PIgN_NGi2ghg_U0uuEXww', authOptions: FlutterAuthClientOptions());
   await GoogleSignIn.instance.initialize(
     serverClientId: '56790361943-87olac8bu9i6ca617c9mms3irt19eqke.apps.googleusercontent.com',
   );
 
-  await Firebase.initializeApp();
+  if(Platform.isAndroid || Platform.isIOS) {
+    await Firebase.initializeApp();
+  }
   
   runApp(
     EasyLocalization(
