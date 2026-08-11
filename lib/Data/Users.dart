@@ -15,6 +15,7 @@ class Users {
   final String gender;
   final String? city;
   final String? description;
+  final String? app_mode;
 
   Users({
     required this.id,
@@ -28,6 +29,7 @@ class Users {
     required this.gender,
     this.city,
     this.description,
+    this.app_mode,
   });
 
   factory Users.fromJson(Map<String, dynamic> json) {
@@ -47,6 +49,7 @@ class Users {
       gender: json['gender'],
       city: json['city'],
       description: json['description'],
+      app_mode: json['app_mode'],
     );
   }
 
