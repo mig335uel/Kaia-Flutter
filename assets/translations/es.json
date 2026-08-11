@@ -31,7 +31,9 @@
   "logout": "Cerrar sesión",
   "home": "Inicio",
   "chatGame": "Flash Chat",
-  "voiceGame": "Flash Call",
+  "voiceGame": "Flash Voice",
   "discover": "Descubrir",
-  "profile": "Perfil"
+  "profile": "Perfil",
+  "chooseMode": "Elige tu experiencia",
+  "chooseModeDesc": "Puedes cambiar de modo en cualquier momento desde los ajustes"
 }

@@ -35,7 +35,9 @@ class _ProfilecardState extends State<Profilecard> {
   Future<void> _loadFeed() async {
     final me = await Users.useAuth();
     await _controller.loadInitial(me.id);
-    setState(() {});
+    setState(() {
+      
+    });
   }
 
   void _onScroll() async {

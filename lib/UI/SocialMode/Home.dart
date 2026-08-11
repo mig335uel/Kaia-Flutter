@@ -7,14 +7,14 @@ import 'package:kaia/UI/SocialMode/HomeScreen.dart';
 import 'package:kaia/Service/NotificationService.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class Home extends StatefulWidget {
-  const Home({super.key});
+class SocialHome extends StatefulWidget {
+  const SocialHome({super.key});
 
   @override
-  State<Home> createState() => _HomeState();
+  State<SocialHome> createState() => _SocialHomeState();
 }
 
-class _HomeState extends State<Home> {
+class _SocialHomeState extends State<SocialHome> {
   int _selectedIndex = 0;
 
   @override

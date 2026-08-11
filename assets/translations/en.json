@@ -33,5 +33,7 @@
   "discover": "Discover",
   "profile": "Profile",
   "chatGame": "Flash Chat",
-  "voiceGame": "Flash Call"
+  "voiceGame": "Flash Voice",
+  "chooseMode": "Choose Mode",
+  "chooseModeDesc": "Choose your mode"
 }

@@ -5,13 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kaia/UI/SocialMode/Home.dart';
 import 'package:kaia/UI/SocialMode/login_screen.dart';
-import 'package:kaia/UI/complete-profile.dart';
+import 'package:kaia/UI/complete-profile.dart'; 
 import 'package:kaia/Service/NotificationService.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/services.dart'; // Importante para SystemUiOverlayStyle
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-
+import 'package:kaia/Controllers/AppModeController.dart';
+import 'package:kaia/UI/DatingMode/Home.dart';
+import 'package:kaia/UI/ModeSelectionScreen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
@@ -39,12 +41,29 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+
+
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final AppModeController _appModeController = AppModeController();
+
+  @override
+  void dispose() {
+    _appModeController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return AppModeProvider(
+      notifier: _appModeController,
+      child: MaterialApp(
       title: 'Kaia',
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
@@ -93,6 +112,7 @@ class MyApp extends StatelessWidget {
         }
         return null;
       },
+    )
     );
   }
 }
@@ -107,6 +127,7 @@ class AuthWrapper extends StatefulWidget {
 class _AuthWrapperState extends State<AuthWrapper> {
   bool _isLoading = true;
   bool _isProfileComplete = false;
+  RealtimeChannel? _userSubscription;
 
   @override
   void initState() {
@@ -120,9 +141,46 @@ class _AuthWrapperState extends State<AuthWrapper> {
     });
   }
 
+  @override
+  void dispose() {
+    _userSubscription?.unsubscribe();
+    super.dispose();
+  }
+
+  void _setupRealtimeSubscription(String userId) {
+    if (_userSubscription != null) return;
+
+    _userSubscription = Supabase.instance.client
+        .channel('public:users:id=eq.$userId')
+        .onPostgresChanges(
+            event: PostgresChangeEvent.update,
+            schema: 'public',
+            table: 'users',
+            filter: PostgresChangeFilter(
+              type: PostgresChangeFilterType.eq,
+              column: 'id',
+              value: userId,
+            ),
+            callback: (payload) {
+              if (mounted) {
+                final newRecord = payload.newRecord;
+                final String? appModeStr = newRecord['app_mode'];
+                
+                AppMode? mode;
+                if (appModeStr == 'Social') mode = AppMode.social;
+                else if (appModeStr == 'Dating') mode = AppMode.dating;
+                
+                AppModeProvider.of(context, listen: false).setMode(mode);
+              }
+            })
+        .subscribe();
+  }
+
   Future<void> _checkAuthState() async {
     final session = Supabase.instance.client.auth.currentSession;
     if (session == null) {
+      _userSubscription?.unsubscribe();
+      _userSubscription = null;
       setState(() {
         _isLoading = false;
         _isProfileComplete = false;
@@ -130,23 +188,38 @@ class _AuthWrapperState extends State<AuthWrapper> {
       return;
     }
 
+    _setupRealtimeSubscription(session.user.id);
+
     try {
       final response = await Supabase.instance.client
           .from('users')
-          .select('id')
+          .select('id, app_mode')
           .eq('id', session.user.id)
           .maybeSingle();
 
-      setState(() {
-        _isLoading = false;
-        _isProfileComplete = response != null;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _isProfileComplete = response != null;
+        });
+
+        if (response != null) {
+          final String? appModeStr = response['app_mode'];
+          AppMode? mode;
+          if (appModeStr == 'Social') mode = AppMode.social;
+          else if (appModeStr == 'Dating') mode = AppMode.dating;
+          
+          AppModeProvider.of(context, listen: false).setMode(mode);
+        }
+      }
     } catch (e) {
       print("Error checking user profile: $e");
-      setState(() {
-        _isLoading = false;
-        _isProfileComplete = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _isProfileComplete = false;
+        });
+      }
     }
   }
 
@@ -168,6 +241,19 @@ class _AuthWrapperState extends State<AuthWrapper> {
       return const CompleteProfile();
     }
 
-    return const Home();
+    final mode = AppModeProvider.of(context).mode;
+    
+    if (mode == null) {
+      return const Stack(
+        children: [
+          SocialHome(),
+          ModeSelectionScreen(),
+        ],
+      );
+    } else if (mode == AppMode.social) {
+      return const SocialHome();
+    } else {
+      return const DatingHome();
+    }
   }
 }

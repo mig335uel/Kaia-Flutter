@@ -99,6 +99,8 @@ class _CompleteProfileState extends State<CompleteProfile>
       final dataCountry = json.decode(responseBodyCountry);
       final country = dataCountry['country'];
 
+      final ageInYears = DateTime.now().difference(_selectedDate!).inDays / 365.25;
+
       await Supabase.instance.client.from('users').insert({
         'id': user.id,
         'name': _nameController.text,
@@ -108,9 +110,8 @@ class _CompleteProfileState extends State<CompleteProfile>
         'profile_image': profileImageUrl,
         'gender': _genderController.text,
         'country': country,
+        'app_mode': ageInYears >= 18 ? null : 'Social',
       });
-
-      final ageInYears = DateTime.now().difference(_selectedDate!).inDays / 365.25;
 
       int minAgeRange = 18;
       int maxAgeRange = 99;
@@ -134,9 +135,9 @@ class _CompleteProfileState extends State<CompleteProfile>
       });
 
       if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const Home()),
-        );
+        // En lugar de ir siempre a SocialHome, redirigimos al Wrapper para que resuelva 
+        // a dónde ir (Selector de Modo o SocialHome) según su nuevo app_mode.
+        Navigator.of(context).pushReplacementNamed('/?');
       }
     } catch (e) {
       if (mounted) {
