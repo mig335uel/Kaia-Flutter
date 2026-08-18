@@ -35,5 +35,8 @@
   "chatGame": "Flash Chat",
   "voiceGame": "Flash Voice",
   "chooseMode": "Choose Mode",
-  "chooseModeDesc": "Choose your mode"
+  "chooseModeDesc": "Choose your mode",
+  "foryou": "For You",
+  "following": "Following",
+  "whatshappend": "What's happening?"
 }

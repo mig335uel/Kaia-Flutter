@@ -93,7 +93,7 @@ class _MyAppState extends State<MyApp> {
           seedColor: const Color(0xFF8E2DE2),
           brightness: Brightness.dark,
         ),
-        scaffoldBackgroundColor: const Color(0xFF121212), // Gris muy oscuro
+        scaffoldBackgroundColor: const Color(0xFF1F2937), // Gris muy oscuro
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.transparent,
           elevation: 0,

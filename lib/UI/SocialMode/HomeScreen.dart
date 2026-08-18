@@ -54,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
               maxAge = 16;
             }
             _ageRange = RangeValues(minAge, maxAge);
-            
+
             final genderFeed = prefData['genderFeed'] as String;
             if (genderFeed == 'Male') {
               _genderPref = 'chicos';
@@ -71,26 +71,36 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _updatePreferencesAndReloadFeed(RangeValues newAge, String newGender) async {
+  void _updatePreferencesAndReloadFeed(
+    RangeValues newAge,
+    String newGender,
+  ) async {
     setState(() {
       _ageRange = newAge;
       _genderPref = newGender;
     });
-    
-    print("📡 Subiendo a BD -> Edad: ${_ageRange.start.round()}-${_ageRange.end.round()}, Género: $_genderPref");
-    
+
+    print(
+      "📡 Subiendo a BD -> Edad: ${_ageRange.start.round()}-${_ageRange.end.round()}, Género: $_genderPref",
+    );
+
     final user = Supabase.instance.client.auth.currentUser;
     if (user != null) {
       String genderFeed = 'All';
-      if (_genderPref == 'chicos') genderFeed = 'Male';
-      else if (_genderPref == 'chicas') genderFeed = 'Female';
+      if (_genderPref == 'chicos')
+        genderFeed = 'Male';
+      else if (_genderPref == 'chicas')
+        genderFeed = 'Female';
 
       try {
-        await Supabase.instance.client.from('user_preferences').update({
-          'min_age_range': _isUnder16 ? 13 : _ageRange.start.round(),
-          'max_age_range': _isUnder16 ? 16 : _ageRange.end.round(),
-          'genderFeed': genderFeed,
-        }).eq('user_id', user.id);
+        await Supabase.instance.client
+            .from('user_preferences')
+            .update({
+              'min_age_range': _isUnder16 ? 13 : _ageRange.start.round(),
+              'max_age_range': _isUnder16 ? 16 : _ageRange.end.round(),
+              'genderFeed': genderFeed,
+            })
+            .eq('user_id', user.id);
       } catch (e) {
         print("Error updating preferences: $e");
       }
@@ -133,15 +143,24 @@ class _HomeScreenState extends State<HomeScreen> {
                   builder: (context) {
                     return StatefulBuilder(
                       builder: (BuildContext context, StateSetter setModalState) {
-                        final isDark = Theme.of(context).brightness == Brightness.dark;
+                        final isDark =
+                            Theme.of(context).brightness == Brightness.dark;
                         return Container(
-                          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 24,
+                            horizontal: 16,
+                          ),
                           decoration: BoxDecoration(
-                            color: isDark ? const Color(0xFF1C1C1E) : Colors.white,
-                            borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
+                            color: isDark
+                                ? const Color(0xFF1C1C1E)
+                                : Colors.white,
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(25),
+                            ),
                           ),
                           child: Column(
-                            mainAxisSize: MainAxisSize.min, // ¡Esto es clave para que no dé error de altura infinita!
+                            mainAxisSize: MainAxisSize
+                                .min, // ¡Esto es clave para que no dé error de altura infinita!
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Center(
@@ -166,7 +185,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               const SizedBox(height: 11),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
                                 children: [
                                   GestureDetector(
                                     onTap: () {
@@ -178,16 +198,42 @@ class _HomeScreenState extends State<HomeScreen> {
                                       height: 96,
                                       width: 96,
                                       decoration: BoxDecoration(
-                                        color: tempGender == 'chicos' ? (isDark ? Colors.blue.shade900 : const Color(0xFF87C8FF)) : (isDark ? Colors.grey.shade800 : Colors.grey.shade200),
+                                        color: tempGender == 'chicos'
+                                            ? (isDark
+                                                  ? Colors.blue.shade900
+                                                  : const Color(0xFF87C8FF))
+                                            : (isDark
+                                                  ? Colors.grey.shade800
+                                                  : Colors.grey.shade200),
                                         borderRadius: BorderRadius.circular(15),
-                                        border: tempGender == 'chicos' ? Border.all(color: const Color(0xFF0085FF), width: 2) : null,
+                                        border: tempGender == 'chicos'
+                                            ? Border.all(
+                                                color: const Color(0xFF0085FF),
+                                                width: 2,
+                                              )
+                                            : null,
                                       ),
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
-                                          Icon(Icons.male, color: tempGender == 'chicos' ? const Color(0xFF0085FF) : Colors.grey, size: 48),
+                                          Icon(
+                                            Icons.male,
+                                            color: tempGender == 'chicos'
+                                                ? const Color(0xFF0085FF)
+                                                : Colors.grey,
+                                            size: 48,
+                                          ),
                                           const SizedBox(height: 5),
-                                          Text("Chicos", style: TextStyle(color: tempGender == 'chicos' ? const Color(0xFF0085FF) : Colors.grey, fontWeight: FontWeight.bold)),
+                                          Text(
+                                            "Chicos",
+                                            style: TextStyle(
+                                              color: tempGender == 'chicos'
+                                                  ? const Color(0xFF0085FF)
+                                                  : Colors.grey,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -202,16 +248,42 @@ class _HomeScreenState extends State<HomeScreen> {
                                       height: 96,
                                       width: 96,
                                       decoration: BoxDecoration(
-                                        color: tempGender == 'chicas' ? (isDark ? Colors.pink.shade900 : const Color(0xFFFF87C8)) : (isDark ? Colors.grey.shade800 : Colors.grey.shade200),
+                                        color: tempGender == 'chicas'
+                                            ? (isDark
+                                                  ? Colors.pink.shade900
+                                                  : const Color(0xFFFF87C8))
+                                            : (isDark
+                                                  ? Colors.grey.shade800
+                                                  : Colors.grey.shade200),
                                         borderRadius: BorderRadius.circular(15),
-                                        border: tempGender == 'chicas' ? Border.all(color: const Color(0xFFFF0085), width: 2) : null,
+                                        border: tempGender == 'chicas'
+                                            ? Border.all(
+                                                color: const Color(0xFFFF0085),
+                                                width: 2,
+                                              )
+                                            : null,
                                       ),
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
-                                          Icon(Icons.female, color: tempGender == 'chicas' ? const Color(0xFFFF0085) : Colors.grey, size: 48),
+                                          Icon(
+                                            Icons.female,
+                                            color: tempGender == 'chicas'
+                                                ? const Color(0xFFFF0085)
+                                                : Colors.grey,
+                                            size: 48,
+                                          ),
                                           const SizedBox(height: 5),
-                                          Text("Chicas", style: TextStyle(color: tempGender == 'chicas' ? const Color(0xFFFF0085) : Colors.grey, fontWeight: FontWeight.bold)),
+                                          Text(
+                                            "Chicas",
+                                            style: TextStyle(
+                                              color: tempGender == 'chicas'
+                                                  ? const Color(0xFFFF0085)
+                                                  : Colors.grey,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -226,16 +298,42 @@ class _HomeScreenState extends State<HomeScreen> {
                                       height: 96,
                                       width: 96,
                                       decoration: BoxDecoration(
-                                        color: tempGender == 'todos' ? (isDark ? Colors.purple.shade900 : const Color(0xFFD0B3F2)) : (isDark ? Colors.grey.shade800 : Colors.grey.shade200),
+                                        color: tempGender == 'todos'
+                                            ? (isDark
+                                                  ? Colors.purple.shade900
+                                                  : const Color(0xFFD0B3F2))
+                                            : (isDark
+                                                  ? Colors.grey.shade800
+                                                  : Colors.grey.shade200),
                                         borderRadius: BorderRadius.circular(15),
-                                        border: tempGender == 'todos' ? Border.all(color: const Color(0xFF8E2DE2), width: 2) : null,
+                                        border: tempGender == 'todos'
+                                            ? Border.all(
+                                                color: const Color(0xFF8E2DE2),
+                                                width: 2,
+                                              )
+                                            : null,
                                       ),
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
-                                          Icon(Icons.wc, color: tempGender == 'todos' ? const Color(0xFF8E2DE2) : Colors.grey, size: 48),
+                                          Icon(
+                                            Icons.wc,
+                                            color: tempGender == 'todos'
+                                                ? const Color(0xFF8E2DE2)
+                                                : Colors.grey,
+                                            size: 48,
+                                          ),
                                           const SizedBox(height: 5),
-                                          Text("Todos", style: TextStyle(color: tempGender == 'todos' ? const Color(0xFF8E2DE2) : Colors.grey, fontWeight: FontWeight.bold)),
+                                          Text(
+                                            "Todos",
+                                            style: TextStyle(
+                                              color: tempGender == 'todos'
+                                                  ? const Color(0xFF8E2DE2)
+                                                  : Colors.grey,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -255,14 +353,17 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               const SizedBox(height: 15),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     "${_isUnder16 ? 13 : tempAgeRange.start.round()} años",
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
-                                      color: isDark ? Colors.white : Colors.black,
+                                      color: isDark
+                                          ? Colors.white
+                                          : Colors.black,
                                     ),
                                   ),
                                   Text(
@@ -270,7 +371,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
-                                      color: isDark ? Colors.white : Colors.black,
+                                      color: isDark
+                                          ? Colors.white
+                                          : Colors.black,
                                     ),
                                   ),
                                 ],
@@ -279,12 +382,18 @@ class _HomeScreenState extends State<HomeScreen> {
                               SliderTheme(
                                 data: SliderTheme.of(context).copyWith(
                                   activeTrackColor: const Color(0xFF8E2DE2),
-                                  inactiveTrackColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+                                  inactiveTrackColor: isDark
+                                      ? Colors.grey.shade800
+                                      : Colors.grey.shade300,
                                   thumbColor: const Color(0xFF8E2DE2),
-                                  overlayColor: const Color(0xFF8E2DE2).withOpacity(0.2),
+                                  overlayColor: const Color(
+                                    0xFF8E2DE2,
+                                  ).withOpacity(0.2),
                                 ),
                                 child: RangeSlider(
-                                  values: _isUnder16 ? const RangeValues(13, 16) : tempAgeRange,
+                                  values: _isUnder16
+                                      ? const RangeValues(13, 16)
+                                      : tempAgeRange,
                                   min: _isUnder16 ? 13 : 18,
                                   max: _isUnder16 ? 16 : 99,
                                   divisions: _isUnder16 ? 3 : 81,
@@ -304,7 +413,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(15),
                                   ),
-                                  padding: const EdgeInsets.symmetric(vertical: 15),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 15,
+                                  ),
                                 ),
                                 onPressed: () {
                                   Navigator.pop(context);
@@ -321,7 +432,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ],
                           ),
                         );
-                      }
+                      },
                     );
                   },
                 ).whenComplete(() {
@@ -332,7 +443,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   }
                 });
               },
-              child:  Icon(Icons.settings, color: Theme.of(context).textTheme.bodyLarge?.color, size: 30),
+              child: Icon(
+                Icons.settings,
+                color: Theme.of(context).textTheme.bodyLarge?.color,
+                size: 30,
+              ),
             ),
           ],
         ),
@@ -348,7 +463,6 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Text("Cerrar Sesión"),
           ),
           Expanded(child: Profilecard()),
-          
         ],
       ),
     );

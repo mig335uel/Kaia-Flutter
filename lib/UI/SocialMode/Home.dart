@@ -62,7 +62,7 @@ class _SocialHomeState extends State<SocialHome> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? Color.fromARGB(255, 20, 20, 20)
+            ? Color(0xFF1F2937)
             : Colors.white,
         showSelectedLabels: false,
         showUnselectedLabels: false,

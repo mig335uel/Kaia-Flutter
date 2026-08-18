@@ -84,7 +84,7 @@ class Voicematchmakingservice {
     // 1. Nos suscribimos a los UPDATES (actualizaciones) de NUESTRA fila en la tabla
     _matchChannel = supabase
         .channel(
-          'public:voice_matchmaking',
+          'public:social_voice_matchmaking',
         ) // Nombre del canal (puede ser cualquiera)
         .onPostgresChanges(
           event: PostgresChangeEvent

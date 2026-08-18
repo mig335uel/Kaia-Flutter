@@ -191,7 +191,7 @@ class OAuthButtom extends StatelessWidget {
             Text(
               'loginWithAgoras'.tr(),
               style: TextStyle(
-                color: isDark ? Colors.black : Colors.white,
+                color: Colors.black,
                 fontSize: 20,
               ),
               textAlign: TextAlign.center,
