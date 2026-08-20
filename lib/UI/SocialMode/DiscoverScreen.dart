@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kaia/UI/SocialMode/Discover/Following.dart';
 import 'Discover/ForYou.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -16,8 +17,7 @@ class _DiscoverScreenState extends State<DiscoverScreen>
   @override
   void initState() {
     super.initState();
-    // TODO: Cambia length a 2 cuando agregues la pestaña de 'Siguiendo'
-    _tabController = TabController(length: 1, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
       setState(
         () {},
@@ -37,6 +37,8 @@ class _DiscoverScreenState extends State<DiscoverScreen>
       appBar: AppBar(
         title: TabBar(
           controller: _tabController,
+          dividerHeight: 0,
+          
           unselectedLabelColor:
               Colors.grey, // Color del texto cuando NO está seleccionado
 
@@ -57,18 +59,39 @@ class _DiscoverScreenState extends State<DiscoverScreen>
                       child: Text(
                         "foryou".tr(),
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 30,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
                     )
                   : Text("foryou".tr()),
             ),
+            Tab(child: _tabController.index == 1
+                  ? ShaderMask(
+                      blendMode: BlendMode.srcIn,
+                      shaderCallback: (bounds) => const LinearGradient(
+                        colors: [
+                          Color(0xFF6A5BFC),
+                          Color(0xFF7575FF),
+                          Color(0xFF3FCECC),
+                        ],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                      ).createShader(bounds),
+                      child: Text(
+                        "following".tr(),
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    )
+                  : Text("following".tr()),)
             // Cuando agregues el tab de "Following", harías lo mismo pero verificando _tabController.index == 1
           ],
         ),
       ),
-      body: TabBarView(controller: _tabController, children: [Foryou()]),
+      body: TabBarView(controller: _tabController, children: [Foryou(), FollowingDiscover()]),
       floatingActionButton: Padding(
         padding: EdgeInsets.only(bottom: 80.0),
         child: FloatingActionButton(
@@ -87,20 +110,23 @@ class _DiscoverScreenState extends State<DiscoverScreen>
                     padding: const EdgeInsets.all(10.0),
                     child: Center(
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          TextField(
-                            maxLines: null,
-                            minLines: null,
-                            expands: true,
-                            autocorrect: true,
-                            keyboardType: TextInputType.text,
-
-                            decoration: InputDecoration(
-                              hintText: "whatshappend".tr(),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.9,
+                            child: TextField(
+                              autocorrect: true,
+                              keyboardType: TextInputType.multiline,
+                              minLines: 5,
+                              maxLines: null,
+                              decoration: InputDecoration(
+                                hintText: "whatshappend".tr(),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                hintStyle: TextStyle(color: Colors.grey),
                               ),
-                              hintStyle: TextStyle(color: Colors.grey),
                             ),
                           ),
                         ],

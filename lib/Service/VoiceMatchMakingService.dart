@@ -90,7 +90,7 @@ class Voicematchmakingservice {
           event: PostgresChangeEvent
               .update, // ¡CAMBIO CLAVE! Escuchamos cuando ALGUIEN MÁS actualiza nuestra fila
           schema: 'public',
-          table: 'voice_matchmaking',
+          table: 'social_voice_matchmaking',
           filter: PostgresChangeFilter(
             type: PostgresChangeFilterType.eq,
             column: 'user_id',
